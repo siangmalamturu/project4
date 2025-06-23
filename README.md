@@ -95,7 +95,7 @@ This temporal distribution is crucial for time-aware recommendation systems, suc
 
 This bar chart illustrates the frequency of different movie ratings within the MovieLens 10M dataset.
 <div style="text-align: center;">
-  <img src="path/to/your/image_ef775a.png" alt="Distribution of Movie Ratings">
+  <img src="data_photos/Distribution of Movie Ratings.png" alt="Distribution of Movie Ratings">
 </div>
 
 **Key Observations:**
@@ -110,7 +110,7 @@ This distribution suggests that the dataset contains more information on what us
 
 This bar chart, titled "Distribution of Ratings per User," illustrates how many ratings each user has submitted in the MovieLens 10M dataset. The y-axis is on a logarithmic scale, which helps visualize the wide range of user activity.
 <div style="text-align: center;">
-  <img src="path/to/your/image_ef7f19.png" alt="Distribution of Ratings per User">
+  <img src="data_photos/Distribution of Ratings per User.png" alt="Distribution of Ratings per User">
 </div>
 
 **Key Observations:**
@@ -125,7 +125,7 @@ This distribution directly impacts Collaborative Filtering models. The presence 
 
 This bar chart, titled "Distribution of Ratings per Movie," illustrates the frequency of ratings received by each movie in the MovieLens 10M dataset. The y-axis is on a logarithmic scale to better represent the wide range of rating counts.
 <div style="text-align: center;">
-  <img src="path/to/your/image_ef82bc.png" alt="Distribution of Ratings per Movie">
+  <img src="data_photos/Distribution of ratings per movie.png" alt="Distribution of Ratings per Movie">
 </div>
 
 **Key Observations:**
@@ -140,7 +140,7 @@ This skewed distribution significantly affects the performance of collaborative 
 
 This bar chart provides a clear visualization of genre distribution within the MovieLens 10M dataset.
 <div style="text-align: center;">
-  <img src="path/to/your/image_ef1967.png" alt="Top 10 Most Common Movie Genres">
+  <img src="data_photos/Top 10 Most Common Movie Genres.png" alt="Top 10 Most Common Movie Genres">
 </div>
 
 **Key Observations:**
@@ -200,8 +200,10 @@ Model ini bekerja seperti "pencocokan profil" berdasarkan kata kunci judul. Pada
 -   **Top-N Recommendations**: Ketika Anda menyukai sebuah film, sistem akan mencari film-film lain dengan profil judul yang paling mirip berdasarkan skor *cosine similarity* tertinggi, lalu menyajikannya sebagai rekomendasi teratas.
 
 **Contoh Output:**
-Berikut adalah 5 rekomendasi teratas untuk film 'Toy Story (1995)', yang menunjukkan film-film dengan kata kunci judul serupa.
-(gambar hasil)
+Berikut adalah 10 rekomendasi teratas untuk film 'Toy Story (1995)', yang menunjukkan film-film dengan kata kunci judul serupa.
+<div style="text-align: center;">
+  <img src="data_photos/content_based_filtering.png" alt="Content-Based Filtering">
+</div>
 
 ### 2. Collaborative Filtering: Dynamic Popularity-Based Recommendations
 
@@ -215,7 +217,9 @@ Model ini merekomendasikan film berdasarkan **pola popularitas dinamis dari selu
 
 **Contoh Output:**
 Berikut adalah 10 rekomendasi teratas berdasarkan popularitas dinamis, yang menunjukkan film-film yang sedang naik daun atau banyak mendapatkan rating positif terbaru dari komunitas.
-(gambar hasil)
+<div style="text-align: center;">
+  <img src="data_photos/collaborative_filtering.png" alt="Collaborative Filtering">
+</div>
 
 ## Evaluation
 
