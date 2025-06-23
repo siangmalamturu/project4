@@ -201,9 +201,61 @@ Model ini bekerja seperti "pencocokan profil" berdasarkan kata kunci judul. Pada
 
 **Contoh Output:**
 Berikut adalah 5 rekomendasi teratas untuk film 'Toy Story (1995)', yang menunjukkan film-film dengan kata kunci judul serupa.
-```text
---- Content-Based Recommendations for 'Toy Story (1995)' ---
-                    title                       genres      clean_title
-movie_id
-2028     Toy Story 2 (1999)  Adventure|Animation|Children|Comedy|Fantasy  Toy Story 2
-61085    Toy Story 3 (2010)  Adventure|Animation|Children|Comedy|Fantasy  Toy Story 3
+(gambar hasil)
+
+### 2. Collaborative Filtering: Dynamic Popularity-Based Recommendations
+
+Model ini merekomendasikan film berdasarkan **pola popularitas dinamis dari seluruh komunitas pengguna**, berfokus pada film yang paling banyak diinteraksikan atau dirating tinggi dalam periode waktu tertentu.
+
+**Cara Kerja:**
+-   **Time-Based Filtering**: Data rating disaring untuk hanya menyertakan interaksi dalam periode waktu terbaru (misalnya, 1 tahun terakhir), memanfaatkan kolom `timestamp` yang sudah dikonversi.
+-   **Popularity Metric Calculation**: Untuk setiap film dalam periode tersebut, dihitung jumlah rating (`num_ratings`) dan rata-rata rating (`avg_rating`).
+-   **Weighted Rating Formula**: Sebuah formula `weighted_rating` (mirip IMDb) diterapkan untuk memberikan bobot lebih pada film dengan jumlah rating yang signifikan, sehingga popularitasnya lebih robust dan tidak hanya berdasarkan kebetulan rating tinggi dari sedikit orang.
+-   **Top-N Recommendations**: Film-film kemudian diurutkan berdasarkan `weighted_rating` tertinggi, dan N film teratas disajikan sebagai rekomendasi popularitas dinamis global.
+
+**Contoh Output:**
+Berikut adalah 10 rekomendasi teratas berdasarkan popularitas dinamis, yang menunjukkan film-film yang sedang naik daun atau banyak mendapatkan rating positif terbaru dari komunitas.
+(gambar hasil)
+
+## Evaluation
+
+Evaluasi dilakukan untuk mengukur performa masing-masing model secara kuantitatif atau kualitatif sesuai tujuannya.
+
+### Metrik Evaluasi
+
+**1. Content-Based Filtering (TF-IDF pada Judul):**
+
+-   **Precision@k:** Mengukur seberapa banyak item yang relevan dari k item teratas yang direkomendasikan. Metrik ini menjawab pertanyaan: "Dari 10 film yang direkomendasikan, berapa persen yang benar-benar disukai pengguna (di test set)?"
+-   **Recall@k:** Mengukur seberapa banyak item relevan yang berhasil ditemukan oleh sistem dalam k item teratas. Metrik ini menjawab: "Dari semua film yang disukai pengguna di test set, berapa persen yang berhasil kami rekomendasikan?"
+
+**2. Collaborative Filtering (Popularitas Dinamis):**
+
+Untuk model popularitas dinamis, evaluasi lebih difokuskan pada analisis karakteristik output yang dihasilkan, karena model ini tidak memprediksi rating individual atau personalisasi mendalam. Metrik yang relevan adalah **analisis kualitatif terhadap daftar film teratas** yang direkomendasikan dan validasi bahwa daftar tersebut sesuai dengan definisi "populer secara dinamis". Kami akan menilai:
+-   **Relevansi Tren**: Apakah film-film yang direkomendasikan memang terasa seperti "tren" atau film yang baru-baru ini banyak diinteraksikan.
+-   **Kualitas List**: Apakah film-film dalam daftar memiliki `num_ratings` dan `avg_rating` yang tinggi dan masuk akal.
+-   **Kesesuaian dengan Skenario Penggunaan**: Seberapa baik model ini memenuhi tujuannya untuk mengatasi masalah *cold-start* bagi pengguna baru dan menampilkan konten yang sedang *hot*.
+
+### Hasil Evaluasi
+
+**Content-Based Model:**
+
+-   Average Precision@10: **[Isi dengan hasil `avg_precision_cb` dari running code-mu]**
+-   Average Recall@10: **[Isi dengan hasil `avg_recall_cb` dari running code-mu]**
+
+### Analisis
+
+**Content-Based Model:**
+Dari hasil evaluasi Content-Based Filtering, terlihat bahwa rekomendasi didasarkan pada kata kunci dalam judul. Film-film yang direkomendasikan memiliki tema atau subjek yang mirip dengan film input, yang ditangkap melalui analisis TF-IDF pada judul. Hasilnya cenderung berbeda dari pendekatan berbasis genre konvensional, karena mampu menangkap nuansa tematik yang lebih spesifik dari judul film, seperti sekuel atau film dengan fokus naratif yang serupa, yang mungkin tidak selalu tercermin dalam kategori genre yang luas. Meskipun Precision dan Recall mungkin tidak setinggi model yang lebih kompleks, nilai kebaruannya terletak pada cara model ini memahami dan mengelompokkan film berdasarkan semantik judul, bukan hanya kategori.
+
+**Collaborative Filtering (Popularitas Dinamis) Model:**
+Output dari model adalah daftar `dynamic_popular_recommendations` beserta `title`, `genres`, `num_ratings`, `avg_rating`, dan `weighted_rating`. Visualisasi `Top 10 Dynamically Popular Movies (Last 1 Year)` juga disajikan.
+The Dynamic Popularity-Based Recommendation model successfully provides a valuable general recommendation list, particularly useful for new users or for showcasing current trends. While it lacks the deep personalization of SVD, its simplicity, ability to address cold-start scenarios for new users, and responsiveness to temporal popularity make it a complementary and distinct approach within a comprehensive recommendation system framework. The model's results directly display the most interacted-with and highly-rated films within the specified time window, effectively serving its purpose of identifying dynamic popularity.
+
+### Rencana Peningkatan:
+
+-   **Optimasi Hyperparameter (untuk Content-Based TF-IDF)**: Menyesuaikan parameter `TfidfVectorizer` (misalnya, `ngram_range`, `max_df`, `min_df`) dapat membantu menyempurnakan ekstraksi kata kunci dari judul.
+-   **Penyempurnaan Periode Waktu (untuk Popularitas Dinamis)**: Eksplorasi periode waktu yang berbeda (`time_window`) untuk melihat bagaimana hal itu memengaruhi daftar rekomendasi (misalnya, 3 bulan, 6 bulan, atau periode adaptif).
+-   **Pendekatan Hybrid**: Untuk rekomendasi yang lebih komprehensif, kedua model (Content-Based berbasis judul dan Popularitas Dinamis) dapat digabungkan. Misalnya, untuk pengguna baru, gunakan popularitas dinamis; setelah pengguna memiliki beberapa rating, gunakan gabungan popularitas dan kemiripan judul.
+-   **Penanganan Cold-Start (lebih lanjut)**: Meskipun popularitas dinamis mengatasi *cold-start* untuk pengguna baru, ini tidak berlaku untuk film baru yang belum memiliki rating. Pendekatan Content-Based pada judul film baru dapat digabungkan untuk film yang baru rilis.
+
+Pengembangan ke arah ini dapat membantu sistem menjadi lebih responsif terhadap preferensi pengguna dan lebih akurat dalam menyarankan film yang relevan, meskipun bekerja dalam batasan data yang tersedia saat ini.
