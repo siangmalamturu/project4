@@ -79,7 +79,7 @@ Analisis data eksploratif dilakukan untuk memahami distribusi dan karakteristik 
 
 This bar chart, displaying the "Distribution of Movie Release Years," illustrates the temporal spread of films within the MovieLens 10M dataset.
 <div style="text-align: center;">
-  <img src="path/to/your/image_ef21c3.png" alt="Distribution of Movie Release Years">
+  <img src="data_photos/Distribution of Movie Release Years.png" alt="Distribution of Movie Release Years">
 </div>
 
 **Key Observations:**
