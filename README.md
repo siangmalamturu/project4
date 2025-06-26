@@ -52,7 +52,7 @@ Untuk mencapai tujuan tersebut, dua pendekatan solusi akan diimplementasikan:
 
 ## Data Understanding
 
-Dataset yang digunakan dalam proyek ini adalah MovieLens 10M Dataset, yang berisi 10 juta rating film dari sekitar 72.000 pengguna untuk 10.000 film. Dataset ini merupakan sumber daya yang populer untuk penelitian dan pengembangan sistem rekomendasi karena ukurannya yang besar dan data rating yang otentik, yang memungkinkan pemodelan preferensi pengguna yang kompleks.
+Dataset yang digunakan dalam proyek ini adalah MovieLens 10M Dataset, yang berisi **10 juta rating** film dari sekitar **69.878 pengguna** untuk **10.677 film**. Dataset ini merupakan sumber daya yang populer untuk penelitian dan pengembangan sistem rekomendasi karena ukurannya yang besar dan data rating yang otentik, yang memungkinkan pemodelan preferensi pengguna yang kompleks.
 
 Dataset ini dapat diunduh melalui Kaggle: [MovieLens 10M Dataset](https://www.kaggle.com/datasets/amirmotefaker/movielens-10m-dataset-latest-version).
 
@@ -158,17 +158,17 @@ These preprocessing steps strategically prepare the MovieLens 10M dataset for ou
 
 First, the `ratings` and `movies` DataFrames are **merged into a single `df`** on `movie_id`, consolidating all relevant information.
 
-For **Content-Based Filtering (TF-IDF on Titles)**:
-The `title` column in `movies` is transformed into `clean_title` by **removing the release year**. This ensures that our TF-IDF analysis focuses solely on **descriptive keywords within the title**, capturing thematic similarities rather than temporal ones, which is a key novelty of this approach.
-
 For **Collaborative Filtering (Dynamic Popularity)**:
 The `timestamp` column in `df` is **converted to datetime objects**. This is crucial for the "Dynamic Popularity" model, enabling **time-based analysis of user interactions**. Unlike traditional SVD (which often discards timestamps), this conversion allows the model to identify and recommend movies based on recent trends and popularity shifts, providing a distinct advantage for current relevance. The data spans a specific range, indicating its readiness for temporal analysis.
+
+For **Content-Based Filtering (TF-IDF on Titles)**:
+The `title` column in `movies` is transformed into `clean_title` by **removing the release year**. This ensures that our TF-IDF analysis focuses solely on **descriptive keywords within the title**, capturing thematic similarities rather than temporal ones, which is a key novelty of this approach.
 
 ### Pembersihan Awal (Base Prep)
 
 Beberapa langkah persiapan data dilakukan untuk memastikan data siap digunakan untuk pemodelan. Urutan proses ini sangat penting untuk menjamin kualitas data yang masuk ke dalam model.
 
-* **Menghapus Kolom `timestamp` (untuk Collaborative Filtering SVD Lama)**: Dalam proyek asli temanmu, kolom `timestamp` dihapus dari data rating karena waktu pemberian rating tidak relevan untuk model SVD baseline yang dibangun. Alasan utamanya adalah untuk menyederhanakan dataset dan mengurangi penggunaan memori, karena fokus utama adalah pada preferensi (rating) itu sendiri, bukan pada kapan preferensi itu dicatat.
+* **Menghapus Kolom `timestamp` (untuk Collaborative Filtering)**: Kolom `timestamp` dihapus dari data rating karena waktu pemberian rating tidak relevan untuk model time-based analysis of user interactions baseline yang dibangun. Alasan utamanya adalah untuk menyederhanakan dataset dan mengurangi penggunaan memori, karena fokus utama adalah pada preferensi (rating) itu sendiri, bukan pada kapan preferensi itu dicatat.
 
 ### Filter dan Penggabungan Data
 
@@ -190,22 +190,7 @@ Beberapa langkah persiapan data dilakukan untuk memastikan data siap digunakan u
 
 Dua model sistem rekomendasi dikembangkan untuk menyelesaikan permasalahan yang telah didefinisikan. Setiap model menggunakan pendekatan yang berbeda secara fundamental untuk menghasilkan rekomendasi.
 
-### 1. Content-Based Filtering
-
-Model ini merekomendasikan film berdasarkan kemiripan atribut atau "konten" dari film itu sendiri, dalam kasus ini adalah **kata kunci dari judul film**.
-
-**Cara Kerja:**
-Model ini bekerja seperti "pencocokan profil" berdasarkan kata kunci judul. Pada tahap *Data Preparation*, kita telah mengubah judul setiap film menjadi sebuah profil numerik (matriks TF-IDF) setelah membersihkannya dari tahun rilis.
--   **Cosine Similarity**: Metrik ini kemudian digunakan untuk menghitung skor kemiripan antara "profil judul" dari semua pasangan film. Skornya berkisar dari 0 (sama sekali tidak mirip) hingga 1 (identik secara judul).
--   **Top-N Recommendations**: Ketika Anda menyukai sebuah film, sistem akan mencari film-film lain dengan profil judul yang paling mirip berdasarkan skor *cosine similarity* tertinggi, lalu menyajikannya sebagai rekomendasi teratas.
-
-**Contoh Output:**
-Berikut adalah 10 rekomendasi teratas untuk film 'Toy Story (1995)', yang menunjukkan film-film dengan kata kunci judul serupa.
-<div style="text-align: center;">
-  <img src="data_photos/content_based_filtering.png" alt="Content-Based Filtering">
-</div>
-
-### 2. Collaborative Filtering: Dynamic Popularity-Based Recommendations
+### 1. Collaborative Filtering: Dynamic Popularity-Based Recommendations
 
 Model ini merekomendasikan film berdasarkan **pola popularitas dinamis dari seluruh komunitas pengguna**, berfokus pada film yang paling banyak diinteraksikan atau dirating tinggi dalam periode waktu tertentu.
 
@@ -221,39 +206,107 @@ Berikut adalah 10 rekomendasi teratas berdasarkan popularitas dinamis, yang menu
   <img src="data_photos/collaborative_filtering.png" alt="Collaborative Filtering">
 </div>
 
+### 2. Content-Based Filtering
+
+Model ini merekomendasikan film berdasarkan kemiripan atribut atau "konten" dari film itu sendiri, dalam kasus ini adalah **kata kunci dari judul film**.
+
+**Cara Kerja:**
+Model ini bekerja seperti "pencocokan profil" berdasarkan kata kunci judul. Pada tahap *Data Preparation*, kita telah mengubah judul setiap film menjadi sebuah profil numerik (matriks TF-IDF) setelah membersihkannya dari tahun rilis.
+-   **Cosine Similarity**: Metrik ini kemudian digunakan untuk menghitung skor kemiripan antara "profil judul" dari semua pasangan film. Skornya berkisar dari 0 (sama sekali tidak mirip) hingga 1 (identik secara judul).
+-   **Top-N Recommendations**: Ketika Anda menyukai sebuah film, sistem akan mencari film-film lain dengan profil judul yang paling mirip berdasarkan skor *cosine similarity* tertinggi, lalu menyajikannya sebagai rekomendasi teratas.
+
+**Contoh Output:**
+Berikut adalah 10 rekomendasi teratas untuk film 'Toy Story (1995)', yang menunjukkan film-film dengan kata kunci judul serupa.
+<div style="text-align: center;">
+  <img src="data_photos/content_based_filtering.png" alt="Content-Based Filtering">
+</div>
+
 ## Evaluation
 
 Evaluasi dilakukan untuk mengukur performa masing-masing model secara kuantitatif atau kualitatif sesuai tujuannya.
 
 ### Metrik Evaluasi
 
-**1. Content-Based Filtering (TF-IDF pada Judul):**
-
--   **Precision@k:** Mengukur seberapa banyak item yang relevan dari k item teratas yang direkomendasikan. Metrik ini menjawab pertanyaan: "Dari 10 film yang direkomendasikan, berapa persen yang benar-benar disukai pengguna (di test set)?"
--   **Recall@k:** Mengukur seberapa banyak item relevan yang berhasil ditemukan oleh sistem dalam k item teratas. Metrik ini menjawab: "Dari semua film yang disukai pengguna di test set, berapa persen yang berhasil kami rekomendasikan?"
-
-**2. Collaborative Filtering (Popularitas Dinamis):**
+**1. Collaborative Filtering (Popularitas Dinamis):**
 
 Untuk model popularitas dinamis, evaluasi lebih difokuskan pada analisis karakteristik output yang dihasilkan, karena model ini tidak memprediksi rating individual atau personalisasi mendalam. Metrik yang relevan adalah **analisis kualitatif terhadap daftar film teratas** yang direkomendasikan dan validasi bahwa daftar tersebut sesuai dengan definisi "populer secara dinamis". Kami akan menilai:
 -   **Relevansi Tren**: Apakah film-film yang direkomendasikan memang terasa seperti "tren" atau film yang baru-baru ini banyak diinteraksikan.
 -   **Kualitas List**: Apakah film-film dalam daftar memiliki `num_ratings` dan `avg_rating` yang tinggi dan masuk akal.
 -   **Kesesuaian dengan Skenario Penggunaan**: Seberapa baik model ini memenuhi tujuannya untuk mengatasi masalah *cold-start* bagi pengguna baru dan menampilkan konten yang sedang *hot*.
 
+**2. Content-Based Filtering (TF-IDF pada Judul):**
+
+-   **Precision@k:** Mengukur seberapa banyak item yang relevan dari k item teratas yang direkomendasikan. Metrik ini menjawab pertanyaan: "Dari 10 film yang direkomendasikan, berapa persen yang benar-benar disukai pengguna (di test set)?"
+-   **Recall@k:** Mengukur seberapa banyak item relevan yang berhasil ditemukan oleh sistem dalam k item teratas. Metrik ini menjawab: "Dari semua film yang disukai pengguna di test set, berapa persen yang berhasil kami rekomendasikan?"
+
 ### Hasil Evaluasi
 
+**Collaborative Filtering (Popularitas Dinamis) Model:**
+-   Average Hit Rate@10 for Dynamic Popularity: **0.3118**
+
 **Content-Based Model:**
 
--   Average Precision@10: **[Isi dengan hasil `avg_precision_cb` dari running code-mu]**
--   Average Recall@10: **[Isi dengan hasil `avg_recall_cb` dari running code-mu]**
+-   Average Precision@10: **0.0126**
+-   Average Recall@10: **0.0178**
 
 ### Analisis
-
-**Content-Based Model:**
-Dari hasil evaluasi Content-Based Filtering, terlihat bahwa rekomendasi didasarkan pada kata kunci dalam judul. Film-film yang direkomendasikan memiliki tema atau subjek yang mirip dengan film input, yang ditangkap melalui analisis TF-IDF pada judul. Hasilnya cenderung berbeda dari pendekatan berbasis genre konvensional, karena mampu menangkap nuansa tematik yang lebih spesifik dari judul film, seperti sekuel atau film dengan fokus naratif yang serupa, yang mungkin tidak selalu tercermin dalam kategori genre yang luas. Meskipun Precision dan Recall mungkin tidak setinggi model yang lebih kompleks, nilai kebaruannya terletak pada cara model ini memahami dan mengelompokkan film berdasarkan semantik judul, bukan hanya kategori.
 
 **Collaborative Filtering (Popularitas Dinamis) Model:**
 Output dari model adalah daftar `dynamic_popular_recommendations` beserta `title`, `genres`, `num_ratings`, `avg_rating`, dan `weighted_rating`. Visualisasi `Top 10 Dynamically Popular Movies (Last 1 Year)` juga disajikan.
 The Dynamic Popularity-Based Recommendation model successfully provides a valuable general recommendation list, particularly useful for new users or for showcasing current trends. While it lacks the deep personalization of SVD, its simplicity, ability to address cold-start scenarios for new users, and responsiveness to temporal popularity make it a complementary and distinct approach within a comprehensive recommendation system framework. The model's results directly display the most interacted-with and highly-rated films within the specified time window, effectively serving its purpose of identifying dynamic popularity.
+
+**Content-Based Model:**
+Dari hasil evaluasi Content-Based Filtering, terlihat bahwa rekomendasi didasarkan pada kata kunci dalam judul. Film-film yang direkomendasikan memiliki tema atau subjek yang mirip dengan film input, yang ditangkap melalui analisis TF-IDF pada judul. Hasilnya cenderung berbeda dari pendekatan berbasis genre konvensional, karena mampu menangkap nuansa tematik yang lebih spesifik dari judul film, seperti sekuel atau film dengan fokus naratif yang serupa, yang mungkin tidak selalu tercermin dalam kategori genre yang luas. Meskipun Precision dan Recall mungkin tidak setinggi model yang lebih kompleks, nilai kebaruannya terletak pada cara model ini memahami dan mengelompokkan film berdasarkan semantik judul, bukan hanya kategori.
+
+### Hubungan dengan Business Understanding
+
+Proyek sistem rekomendasi ini dibangun dengan tujuan utama mengatasi *information overload* dan meningkatkan *engagement* pengguna pada platform penyedia konten. Setelah melalui tahapan pengembangan dan evaluasi model, dampak dari solusi yang diimplementasikan dapat dijabarkan sebagai berikut:
+
+#### **Apakah sudah menjawab setiap problem statement?**
+
+Ya, proyek ini berhasil menjawab setiap pernyataan masalah yang telah ditetapkan:
+
+1.  **Membangun sistem rekomendasi personal berdasarkan kata kunci judul film:** Model Content-Based Filtering telah berhasil dikembangkan dengan menggunakan teknik TF-IDF pada *clean title* film. Meskipun metrik kuantitatif (Average Precision@10: 0.0090, Average Recall@10: 0.0167) mungkin terlihat rendah, model ini secara konseptual menunjukkan kemampuan untuk merekomendasikan film berdasarkan kemiripan semantik dari judul, yang merupakan pendekatan berbeda dari hanya genre.
+2.  **Membangun sistem rekomendasi berdasarkan popularitas dinamis dan tren rating terbaru:** Model Collaborative Filtering berbasis Popularitas Dinamis berhasil diimplementasikan dengan memanfaatkan data `timestamp` untuk mengidentifikasi film-film yang sedang "naik daun" di komunitas. Metrik Hit Rate@10 sebesar 0.3118 menunjukkan bahwa model ini cukup efektif dalam menyertakan setidaknya satu film yang disukai pengguna dalam daftar rekomendasi populernya.
+3.  **Mengukur dan membandingkan performa kedua pendekatan:** Proyek ini secara jelas membandingkan kedua model menggunakan metrik yang relevan untuk masing-masing: Precision dan Recall untuk Content-Based, serta Hit Rate untuk Popularitas Dinamis. Analisis hasil evaluasi telah dipaparkan, mengidentifikasi kekuatan dan kelemahan unik dari setiap pendekatan dalam konteks kebaruan proyek ini.
+
+#### **Apakah berhasil mencapai setiap goals yang diharapkan?**
+
+Semua tujuan (goals) yang ditetapkan di awal proyek telah berhasil dicapai:
+
+1.  **Mengembangkan model rekomendasi Content-Based Filtering berdasarkan kesamaan kata kunci judul film:** Model telah berhasil dibangun dan terbukti menghasilkan rekomendasi berdasarkan analisis kata kunci dari judul film.
+2.  **Mengembangkan model rekomendasi Collaborative Filtering menggunakan teknik popularitas dinamis berbasis waktu:** Model ini telah sukses diimplementasikan, mampu mengidentifikasi dan merekomendasikan film berdasarkan tren popularitas terkini dari komunitas pengguna.
+3.  **Mengevaluasi kedua model menggunakan metrik yang sesuai dan memahami kekuatan/kelemahannya:** Evaluasi telah dilakukan dengan metrik yang relevan untuk setiap model, dan analisis telah disajikan untuk mengidentifikasi skenario penggunaan terbaik dan keterbatasan masing-masing model.
+
+#### **Apakah setiap solusi statement yang kamu rencanakan berdampak? Jelaskan!**
+
+Setiap `solution statement` yang direncanakan telah menunjukkan dampak yang signifikan dalam mengatasi *problem statements* dan mencapai *goals* proyek:
+
+1.  **Dampak Solusi Content-Based Filtering (Analisis Kata Kunci Judul):**
+    * Solusi ini berdampak dengan menawarkan **alternatif terhadap rekomendasi berbasis genre konvensional**. Dengan menganalisis kata kunci dari judul, model ini dapat menangkap nuansa tematik atau fokus naratif yang lebih spesifik, seperti merekomendasikan sekuel atau film dengan tema yang sangat mirip yang mungkin tidak terwakili secara eksplisit dalam kategori genre luas. Dampaknya adalah potensi untuk **meningkatkan *serendipity* dan relevansi** bagi pengguna yang mencari konten dengan *niche* atau alur cerita tertentu, melampaui batasan kategorisasi genre sederhana.
+
+2.  **Dampak Solusi Collaborative Filtering (Popularitas Dinamis):**
+    * Solusi ini memiliki dampak besar terutama dalam **mengatasi masalah *cold-start* bagi pengguna baru**. Model ini mampu memberikan rekomendasi yang relevan secara instan kepada pengguna tanpa riwayat rating, dengan menyajikan film-film yang sedang "hot" di komunitas.
+    * Selain itu, dampaknya juga terasa dalam **mengidentifikasi dan menonjolkan tren terkini**. Dengan mempertimbangkan `timestamp` rating, model ini memastikan rekomendasi yang diberikan selalu *up-to-date* dengan selera mayoritas pengguna, yang sangat berharga untuk platform yang ingin menjaga kontennya tetap segar dan relevan secara dinamis. Hit Rate@10 sebesar 0.3118 secara kuantitatif mendukung dampak ini, menunjukkan bahwa daftar populer yang dihasilkan seringkali memang mengandung film-film yang disukai oleh berbagai pengguna.
+
+#### **Komparasi Antar Model dan Penentuan Model Terbaik**
+
+Membandingkan kedua model ini secara langsung harus dilakukan dengan pemahaman yang mendalam mengenai **tujuan dan metrik yang berbeda**:
+
+* **Content-Based Filtering (TF-IDF Judul)**: Fokus pada **personalisasi berbasis atribut** dengan mencari kemiripan tematik dari judul. Metrik Precision dan Recall mengukur seberapa akurat rekomendasi personal ini. Nilai yang rendah mengindikasikan bahwa hanya mengandalkan kata kunci judul mungkin belum cukup untuk memprediksi preferensi pribadi secara konsisten dan akurat pada skala besar. Model ini cenderung menghasilkan rekomendasi yang sangat spesifik dan mirip dengan input, yang berpotensi menyebabkan *overspecialization*.
+
+* **Collaborative Filtering (Popularitas Dinamis)**: Fokus pada **relevansi global dan deteksi tren**, serta penanganan masalah *cold-start* untuk pengguna baru. Metrik Hit Rate mengukur seberapa sering rekomendasi populer ini "mengenai" preferensi pengguna secara umum. Nilai 0.3118 menunjukkan keberhasilan yang signifikan dalam skenario ini, mengindikasikan bahwa daftar populer ini adalah titik awal yang baik untuk pengguna baru atau untuk mengetahui "apa yang sedang hangat". Model ini tidak menawarkan personalisasi mendalam, tetapi sangat efektif untuk kasus penggunaan universal.
+
+**Kesimpulan Model Terbaik:**
+
+Tidak ada satu model yang secara absolut "terbaik" di semua skenario, karena **kinerja "terbaik" sangat bergantung pada kebutuhan bisnis dan skenario penggunaan spesifik**.
+
+* Jika tujuan utama adalah **memberikan rekomendasi umum yang relevan dan terkini kepada pengguna baru, atau untuk menyoroti tren populer**, maka **Collaborative Filtering (Popularitas Dinamis) adalah pilihan yang lebih efektif**. Kemampuannya mengatasi *cold-start* dan Hit Rate yang cukup baik menjadikannya solusi yang kuat untuk tujuan ini.
+
+* Jika tujuan adalah **menemukan rekomendasi yang sangat spesifik dan bernuansa berdasarkan konten film (di luar kategori genre tradisional) untuk pengguna dengan riwayat yang jelas**, maka **Content-Based Filtering (TF-IDF Judul)** menawarkan pendekatan inovatif. Meskipun metriknya rendah dalam konteks personalisasi presisi, model ini memberikan perspektif unik yang bisa dikembangkan lebih lanjut untuk melayani preferensi yang lebih *niche*.
+
+**Rekomendasi Terbaik (Solusi Hybrid):**
+Dalam praktiknya, solusi terbaik seringkali adalah **pendekatan hybrid**. Misalnya, menggunakan model Popularitas Dinamis untuk pengguna baru atau sebagai "fallback" ketika model personal tidak memiliki cukup data. Seiring waktu, ketika pengguna mengumpulkan lebih banyak rating, sistem dapat beralih atau menggabungkan rekomendasi dari Content-Based (berbasis judul) atau model Collaborative Filtering yang lebih canggih (seperti SVD) untuk personalisasi yang lebih dalam. Ini memungkinkan sistem untuk memberikan rekomendasi yang relevan di semua tahap siklus hidup pengguna dan memenuhi berbagai tujuan bisnis.
 
 ### Rencana Peningkatan:
 
